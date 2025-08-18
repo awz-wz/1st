@@ -1,0 +1,77 @@
+{
+  "Version": 1,
+  "Hash": "dlO7dyAr3kMfONRs3JeWefpreRYB/SFTWxXI6TVibtE=",
+  "Source": "1st application",
+  "BasePath": "_content/1st application",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "1st application\\wwwroot",
+      "Source": "1st application",
+      "ContentRoot": "C:\\C# Projects\\1st application\\wwwroot\\",
+      "BasePath": "_content/1st application",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\C# Projects\\1st application\\wwwroot\\css\\style.css",
+      "SourceId": "1st application",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\C# Projects\\1st application\\wwwroot\\",
+      "BasePath": "_content/1st application",
+      "RelativePath": "css/style.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\style.css"
+    },
+    {
+      "Identity": "C:\\C# Projects\\1st application\\wwwroot\\index.html",
+      "SourceId": "1st application",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\C# Projects\\1st application\\wwwroot\\",
+      "BasePath": "_content/1st application",
+      "RelativePath": "index.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\index.html"
+    },
+    {
+      "Identity": "C:\\C# Projects\\1st application\\wwwroot\\js\\app.js",
+      "SourceId": "1st application",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\C# Projects\\1st application\\wwwroot\\",
+      "BasePath": "_content/1st application",
+      "RelativePath": "js/app.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\app.js"
+    }
+  ]
+}

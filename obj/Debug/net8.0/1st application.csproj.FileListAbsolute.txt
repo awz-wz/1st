@@ -1,0 +1,39 @@
+C:\C# Projects\1st application\bin\Debug\net8.0\1st application.staticwebassets.runtime.json
+C:\C# Projects\1st application\bin\Debug\net8.0\1st application.exe
+C:\C# Projects\1st application\bin\Debug\net8.0\1st application.deps.json
+C:\C# Projects\1st application\bin\Debug\net8.0\1st application.runtimeconfig.json
+C:\C# Projects\1st application\bin\Debug\net8.0\1st application.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\1st application.pdb
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.DotNet.PlatformAbstractions.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.Extensions.DependencyModel.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\C# Projects\1st application\bin\Debug\net8.0\Newtonsoft.Json.Bson.dll
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.csproj.AssemblyReference.cache
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.GeneratedMSBuildEditorConfig.editorconfig
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.AssemblyInfoInputs.cache
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.AssemblyInfo.cs
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.csproj.CoreCompileInputs.cache
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.MvcApplicationPartsAssemblyInfo.cache
+C:\C# Projects\1st application\obj\Debug\net8.0\staticwebassets.build.json
+C:\C# Projects\1st application\obj\Debug\net8.0\staticwebassets.development.json
+C:\C# Projects\1st application\obj\Debug\net8.0\staticwebassets\msbuild.1st application.Microsoft.AspNetCore.StaticWebAssets.props
+C:\C# Projects\1st application\obj\Debug\net8.0\staticwebassets\msbuild.build.1st application.props
+C:\C# Projects\1st application\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.1st application.props
+C:\C# Projects\1st application\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.1st application.props
+C:\C# Projects\1st application\obj\Debug\net8.0\staticwebassets.pack.json
+C:\C# Projects\1st application\obj\Debug\net8.0\scopedcss\bundle\1st application.styles.css
+C:\C# Projects\1st application\obj\Debug\net8.0\1st appl.604AB795.Up2Date
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.dll
+C:\C# Projects\1st application\obj\Debug\net8.0\refint\1st application.dll
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.pdb
+C:\C# Projects\1st application\obj\Debug\net8.0\1st application.genruntimeconfig.cache
+C:\C# Projects\1st application\obj\Debug\net8.0\ref\1st application.dll
