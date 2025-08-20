@@ -1,4 +1,7 @@
-﻿using PIWebAPIApp.Utilities;
+﻿using PIWebAPIApp.Interfaces;
+using PIWebAPIApp.Models;
+using PIWebAPIApp.Services;
+using PIWebAPIApp.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,27 @@ builder.Services.AddCors(options =>
 
 // Добавляем контроллеры
 builder.Services.AddControllers();
+
+// Добавляем сервисы
+builder.Services.AddSingleton<PIConfiguration>(sp =>
+{
+    return new PIConfiguration
+    {
+        BaseUrl = "https://piwebd2.tengizchevroil.com/piwebapi",
+        DataServerWebId = "F1DSWCdJQqyHMkueMiGiQ3KQpwvKUjAAVENPR0lMU1RQSURcS1RMLUZXUy1LLTI2MC5NVg",
+        UseDefaultCredentials = true,
+        TimeoutSeconds = 30
+    };
+});
+
+builder.Services.AddSingleton<PIWebApiClient>(sp =>
+{
+    var config = sp.GetRequiredService<PIConfiguration>();
+    return new PIWebApiClient(config);
+});
+
+builder.Services.AddSingleton<ITagService, PITagService>();
+builder.Services.AddSingleton<INotificationService, NotificationService>();
 
 var app = builder.Build();
 

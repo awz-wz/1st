@@ -9,65 +9,44 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎛️ PI Tag Manager</h1>
-            <p>Monitor and control PI system tags</p>
+            <h1>PI Tag Manager</h1>
+            <p>Control and monitor your PI tags with ease</p>
         </header>
 
-        <div class="main-content">
-            <!-- Input Section -->
-            <div class="input-section">
-                <div class="form-group">
-                    <label for="tagName">Tag Name:</label>
-                    <input type="text" id="tagName" placeholder="Enter tag name (e.g., KTL-FWS-K-260.MV)" value="KTL-FWS-K-260.MV" />
-                    <button id="getTagBtn" class="btn btn-primary">GET</button>
-                </div>
+        <div class="form-section">
+            <div class="form-group">
+                <label for="currentUser">Current User:</label>
+                <input type="text" id="currentUser" class="form-control" value="unknown" readonly>
             </div>
-
-            <!-- Tag Information Display -->
-            <div class="tag-info-section" id="tagInfoSection" style="display: none;">
-                <h2>Tag Information</h2>
-                <div class="tag-card">
-                    <div class="tag-header">
-                        <h3 id="tagNameDisplay">Tag Name</h3>
-                        <span id="tagStatus" class="status-badge">Status</span>
-                    </div>
-                    <div class="tag-details">
-                        <div class="detail-item">
-                            <span class="label">Value:</span>
-                            <span id="tagValue" class="value">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="label">Timestamp:</span>
-                            <span id="tagTimestamp" class="value">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="label">Units:</span>
-                            <span id="tagUnits" class="value">-</span>
-                        </div>
-                    </div>
-                </div>
+            
+            <div class="form-group">
+                <label for="email">Email for Notifications:</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter email address">
             </div>
-
-            <!-- Control Section -->
-            <div class="control-section" id="controlSection" style="display: none;">
-                <h2>Control Tag</h2>
-                <div class="control-form">
-                    <div class="form-group">
-                        <label for="statusSelect">Set Status:</label>
-                        <select id="statusSelect">
-                            <option value="OPEN">OPEN</option>
-                            <option value="CLOSED">CLOSED</option>
-                        </select>
-                    </div>
-                    <button id="updateTagBtn" class="btn btn-success">UPDATE</button>
-                </div>
+            
+            <div class="form-group">
+                <label for="justification">Justification:</label>
+                <textarea id="justification" class="form-control" placeholder="Enter reason for change"></textarea>
             </div>
-
-            <!-- Status Message -->
-            <div class="status-message" id="statusMessage"></div>
         </div>
 
-        <div class="loading" id="loading">Loading...</div>
+        <div class="tags-section">
+            <div class="section-header">
+                <h2>Tags</h2>
+                <button type="button" id="addTagBtn" class="add-btn">+</button>
+            </div>
+            
+            <div id="tagsContainer" class="tags-container">
+                <!-- Теги будут добавлены динамически -->
+            </div>
+        </div>
+
+        <div class="actions-section">
+            <button type="button" id="saveBtn" class="save-btn">Save All Changes</button>
+            <button type="button" id="exportBtn" class="export-btn">Export to PDF</button>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
     </div>
 
     <script src="js/app.js"></script>
