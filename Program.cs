@@ -1,5 +1,5 @@
 ﻿using PIWebAPIApp.Interfaces;
-using PIWebAPIApp.Models;
+using PIWebAPIApp.Models; // Убедитесь, что это есть
 using PIWebAPIApp.Services;
 using PIWebAPIApp.Utilities;
 
@@ -20,6 +20,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 // Добавляем сервисы
+// Конфигурация PI - оставляем как было, это работает
 builder.Services.AddSingleton<PIConfiguration>(sp =>
 {
     return new PIConfiguration
@@ -31,6 +32,21 @@ builder.Services.AddSingleton<PIConfiguration>(sp =>
     };
 });
 
+// === ИСПРАВЛЕННАЯ РЕГИСТРАЦИЯ EmailConfiguration ===
+// 1. Регистрируем EmailConfiguration как Singleton, заполняя его данными из appsettings.json
+builder.Services.AddSingleton<EmailConfiguration>(sp =>
+{
+    var emailConfig = new EmailConfiguration();
+    // Читаем конфигурацию из appsettings.json
+    builder.Configuration.GetSection("EmailConfiguration").Bind(emailConfig);
+    
+    // Логируем для отладки (временно)
+    Logger.Info($"EmailConfiguration loaded from appsettings.json - Server: {emailConfig.SmtpServer}, Port: {emailConfig.SmtpPort}, Email: {emailConfig.SenderEmail}, Password Length: {(emailConfig.SenderPassword ?? "").Length}");
+    
+    return emailConfig;
+});
+// === КОНЕЦ ИСПРАВЛЕННОЙ РЕГИСТРАЦИИ EmailConfiguration ===
+
 builder.Services.AddSingleton<PIWebApiClient>(sp =>
 {
     var config = sp.GetRequiredService<PIConfiguration>();
@@ -38,6 +54,7 @@ builder.Services.AddSingleton<PIWebApiClient>(sp =>
 });
 
 builder.Services.AddSingleton<ITagService, PITagService>();
+// Регистрируем NotificationService, который теперь зависит от EmailConfiguration
 builder.Services.AddSingleton<INotificationService, NotificationService>();
 
 var app = builder.Build();

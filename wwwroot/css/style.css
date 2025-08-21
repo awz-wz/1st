@@ -382,3 +382,17 @@ header p {
         margin-right: 0;
     }
 }
+/* === СТИЛИ ДЛЯ ПОЛЕЙ С ОШИБКАМИ === */
+.form-control.invalid {
+    border-color: #dc3545 !important; /* Красная рамка */
+    background-color: #fff5f5; /* Светло-красный фон */
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+}
+
+.field-error-message {
+    color: #dc3545; /* Красный цвет текста */
+    font-size: 0.875rem; /* Меньший размер шрифта */
+    margin-top: 0.25rem; /* Отступ сверху */
+    display: block;
+}
+/* === КОНЕЦ СТИЛЕЙ ДЛЯ ПОЛЕЙ С ОШИБКАМИ === */

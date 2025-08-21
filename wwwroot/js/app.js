@@ -4,7 +4,8 @@ class PITagManager {
         this.currentTags = [];
         this.maxTags = 10;
         this.currentUser = null;
-        
+        this.emailErrorDiv = null; // Для хранения элемента ошибки email
+
         // DOM Elements
         this.userDisplay = document.getElementById('currentUser');
         this.emailInput = document.getElementById('email');
@@ -15,59 +16,169 @@ class PITagManager {
         this.exportBtn = document.getElementById('exportBtn');
         this.loading = document.getElementById('loading');
         this.statusMessage = document.getElementById('statusMessage');
-        
+
         this.init();
     }
 
     async init() {
         // Получаем текущего пользователя
         await this.getCurrentUser();
-        
+
         // Добавляем первое поле тега
         this.addTagField();
-        
+
         // Event Listeners
         this.addTagBtn.addEventListener('click', () => this.addTagField());
         this.saveBtn.addEventListener('click', () => this.saveAllTags());
         this.exportBtn.addEventListener('click', () => this.exportToPdf());
-        
-        // Allow Enter key in input field
-        this.emailInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.saveAllTags();
-            }
-        });
+
+        // Добавляем обработчик ввода для поля email для очистки ошибки
+        if (this.emailInput) {
+            this.emailInput.addEventListener('input', () => {
+                if (this.emailInput.classList.contains('invalid')) {
+                    this.clearFieldError(this.emailInput);
+                }
+            });
+        }
     }
 
-        async saveAllTags() {
+    // === МЕТОДЫ ДЛЯ ВАЛИДАЦИИ ===
+    isValidEmail(email) {
+        // Простая, но эффективная проверка формата email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    showFieldError(inputElement, message) {
+        // Добавляем класс для визуального выделения ошибки
+        inputElement.classList.add('invalid');
+
+        // Создаем или обновляем элемент с сообщением об ошибке
+        let errorDiv = inputElement.parentNode.querySelector('.field-error-message');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'field-error-message';
+            inputElement.parentNode.appendChild(errorDiv);
+            // Сохраняем ссылку на элемент ошибки для последующего удаления
+            if (inputElement === this.emailInput) {
+                this.emailErrorDiv = errorDiv;
+            }
+        }
+        errorDiv.textContent = message;
+    }
+
+    clearFieldError(inputElement) {
+        inputElement.classList.remove('invalid');
+        const errorDiv = inputElement.parentNode.querySelector('.field-error-message');
+        if (errorDiv) {
+            errorDiv.remove();
+            if (inputElement === this.emailInput && this.emailErrorDiv === errorDiv) {
+                this.emailErrorDiv = null;
+            }
+        }
+    }
+    // === КОНЕЦ МЕТОДОВ ДЛЯ ВАЛИДАЦИИ ===
+
+    async saveAllTags() {
         const email = this.emailInput.value.trim();
         const justification = this.justificationInput.value.trim();
 
-        // Проверка обязательных полей
+        // === ВАЛИДАЦИЯ EMAIL С ВИЗУАЛЬНОЙ ОБРАТНОЙ СВЯЗЬЮ ===
+        // Сначала уберем возможные предыдущие ошибки
+        this.emailInput.classList.remove('invalid');
+        if (this.emailErrorDiv) {
+            this.emailErrorDiv.remove();
+            this.emailErrorDiv = null;
+        }
+
         if (!email) {
+            this.showFieldError(this.emailInput, 'Email is required');
             this.showStatusMessage('Please enter email address', 'error');
             return;
         }
 
-        // Проверка формата email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!this.isValidEmail(email)) {
+            this.showFieldError(this.emailInput, 'Please enter a valid email address (e.g., user@example.com)');
             this.showStatusMessage('Please enter a valid email address', 'error');
             return;
         }
+        // === КОНЕЦ ВАЛИДАЦИИ EMAIL ===
 
         if (!justification) {
             this.showStatusMessage('Please enter justification', 'error');
+            // Можно также подсветить поле justification, если добавить ему обработку
             return;
         }
 
-        // Проверка тегов
         if (this.currentTags.length === 0) {
             this.showStatusMessage('Please add at least one tag', 'error');
             return;
         }
 
-        // ... остальной код сохранения ...
+        try {
+            this.setLoading(true);
+
+            // Проверяем, что все теги имеют имя
+            const validTags = this.currentTags.filter(tag => tag.name);
+            if (validTags.length === 0) {
+                this.showStatusMessage('Please get information for at least one tag', 'error');
+                return;
+            }
+
+            // Подготавливаем данные для обновления
+            const updatePromises = validTags.map(async (tag) => {
+                const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
+                const newStatus = statusSelect ? statusSelect.value : 'OPEN';
+
+                const response = await fetch('/api/tags/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tagName: tag.name,
+                        newState: newStatus,
+                        email: email,
+                        justification: justification,
+                        user: this.currentUser
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to update tag: ${response.status}`);
+                }
+
+                return await response.json();
+            });
+
+            const results = await Promise.all(updatePromises);
+
+            // Обновляем отображение для каждого тега
+            validTags.forEach(tag => {
+                const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
+                const newStatus = statusSelect ? statusSelect.value : 'OPEN';
+
+                const tagValue = document.getElementById(`tagValue_${tag.index}`);
+                const tagTimestamp = document.getElementById(`tagTimestamp_${tag.index}`);
+
+                if (tagValue) {
+                    tagValue.textContent = newStatus;
+                    tagValue.className = 'value value-good';
+                }
+                if (tagTimestamp) {
+                    const now = new Date().toLocaleString('en-US');
+                    tagTimestamp.textContent = now;
+                }
+            });
+
+            this.showStatusMessage('All tags updated successfully');
+        } catch (error) {
+            console.error('Error updating tags:', error);
+            this.showStatusMessage(`Error: ${error.message}`, 'error');
+        } finally {
+            this.setLoading(false);
+        }
     }
 
     async getCurrentUser() {
@@ -146,10 +257,10 @@ class PITagManager {
 
         input.addEventListener('input', async (e) => {
             const value = e.target.value.trim();
-            
+
             // Clear previous timeout
             clearTimeout(timeoutId);
-            
+
             if (value.length < 2) {
                 suggestionsDiv.style.display = 'none';
                 return;
@@ -210,19 +321,19 @@ class PITagManager {
 
         try {
             this.setLoading(true);
-            
+
             const response = await fetch(`${this.apiUrl}/${encodeURIComponent(tagName)}`);
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || `Failed to get tag: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             // Update tag info display
             this.displayTagInfo(tagIndex, tagName, data);
-            
+
             this.showStatusMessage('Tag information retrieved successfully');
         } catch (error) {
             console.error('Error getting tag info:', error);
@@ -231,81 +342,7 @@ class PITagManager {
             this.setLoading(false);
         }
     }
-        // Добавь этот метод в класс PITagManager
 
-        async exportToPdf() {
-            const email = this.emailInput.value.trim();
-            const justification = this.justificationInput.value.trim();
-
-            if (this.currentTags.length === 0) {
-                this.showStatusMessage('Please add at least one tag', 'error');
-                return;
-            }
-
-            if (!this.currentUser) {
-                this.showStatusMessage('Unable to get current user', 'error');
-                return;
-            }
-
-            try {
-                this.setLoading(true);
-                
-                // Подготавливаем данные для экспорта
-                const tagsToExport = this.currentTags
-                    .filter(tag => tag.name)
-                    .map(tag => {
-                        const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
-                        return {
-                            tagName: tag.name,
-                            newState: statusSelect ? statusSelect.value : 'OPEN'
-                        };
-                    });
-
-                if (tagsToExport.length === 0) {
-                    this.showStatusMessage('No valid tags to export', 'error');
-                    return;
-                }
-
-                const exportData = {
-                    tags: tagsToExport,
-                    user: this.currentUser,
-                    email: email,
-                    justification: justification
-                };
-
-                // Отправляем запрос на сервер
-                const response = await fetch('/api/tags/export-pdf', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(exportData)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to export PDF: ${response.status}`);
-                }
-
-                // Получаем PDF файл
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `pi_tags_report_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                this.showStatusMessage('PDF exported successfully');
-            } catch (error) {
-                console.error('Error exporting to PDF:', error);
-                this.showStatusMessage(`Error: ${error.message}`, 'error');
-            } finally {
-                this.setLoading(false);
-            }
-        }
     displayTagInfo(tagIndex, tagName, data) {
         const tagInfo = this.currentTags.find(tag => tag.index === tagIndex);
         if (tagInfo) {
@@ -349,82 +386,74 @@ class PITagManager {
         }
     }
 
-    async saveAllTags() {
+    async exportToPdf() {
         const email = this.emailInput.value.trim();
         const justification = this.justificationInput.value.trim();
-
-        if (!email) {
-            this.showStatusMessage('Please enter email address', 'error');
-            return;
-        }
-
-        if (!justification) {
-            this.showStatusMessage('Please enter justification', 'error');
-            return;
-        }
 
         if (this.currentTags.length === 0) {
             this.showStatusMessage('Please add at least one tag', 'error');
             return;
         }
 
+        if (!this.currentUser) {
+            this.showStatusMessage('Unable to get current user', 'error');
+            return;
+        }
+
         try {
             this.setLoading(true);
-            
-            // Update all tags
-            const updatePromises = this.currentTags.map(async (tag) => {
-                if (!tag.name) return null;
-                
-                const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
-                const newStatus = statusSelect ? statusSelect.value : 'OPEN';
 
-                const response = await fetch('/api/tags/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+            // Подготавливаем данные для экспорта
+            const tagsToExport = this.currentTags
+                .filter(tag => tag.name)
+                .map(tag => {
+                    const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
+                    return {
                         tagName: tag.name,
-                        newState: newStatus,
-                        email: email,
-                        justification: justification,
-                        user: this.currentUser
-                    })
+                        newState: statusSelect ? statusSelect.value : 'OPEN'
+                    };
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to update tag: ${response.status}`);
-                }
+            if (tagsToExport.length === 0) {
+                this.showStatusMessage('No valid tags to export', 'error');
+                return;
+            }
 
-                return await response.json();
+            const exportData = {
+                tags: tagsToExport,
+                user: this.currentUser,
+                email: email,
+                justification: justification
+            };
+
+            // Отправляем запрос на сервер
+            const response = await fetch('/api/tags/export-pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(exportData)
             });
 
-            const results = await Promise.all(updatePromises);
-            
-            // Update displayed values and timestamps
-            this.currentTags.forEach(tag => {
-                if (tag.name) {
-                    const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
-                    const newStatus = statusSelect ? statusSelect.value : 'OPEN';
-                    
-                    const tagValue = document.getElementById(`tagValue_${tag.index}`);
-                    const tagTimestamp = document.getElementById(`tagTimestamp_${tag.index}`);
-                    
-                    if (tagValue) {
-                        tagValue.textContent = newStatus;
-                        tagValue.className = 'value value-good';
-                    }
-                    if (tagTimestamp) {
-                        const now = new Date().toLocaleString('en-US');
-                        tagTimestamp.textContent = now;
-                    }
-                }
-            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Failed to export PDF: ${response.status}`);
+            }
 
-            this.showStatusMessage('All tags updated successfully');
+            // Получаем PDF файл
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pi_tags_report_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            this.showStatusMessage('PDF exported successfully');
         } catch (error) {
-            console.error('Error updating tags:', error);
+            console.error('Error exporting to PDF:', error);
             this.showStatusMessage(`Error: ${error.message}`, 'error');
         } finally {
             this.setLoading(false);
@@ -441,14 +470,17 @@ class PITagManager {
         if (this.saveBtn) {
             this.saveBtn.disabled = loading;
         }
+        if (this.exportBtn) {
+            this.exportBtn.disabled = loading;
+        }
     }
 
     showStatusMessage(message, type = 'success') {
         if (!this.statusMessage) return;
-        
+
         this.statusMessage.textContent = message;
         this.statusMessage.className = `status-message ${type} show`;
-        
+
         setTimeout(() => {
             this.statusMessage.classList.remove('show');
         }, 5000);

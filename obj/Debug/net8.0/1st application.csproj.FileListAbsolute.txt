@@ -1,3 +1,4 @@
+C:\C# Projects\1st application\bin\Debug\net8.0\appsettings.json
 C:\C# Projects\1st application\bin\Debug\net8.0\1st application.staticwebassets.runtime.json
 C:\C# Projects\1st application\bin\Debug\net8.0\1st application.exe
 C:\C# Projects\1st application\bin\Debug\net8.0\1st application.deps.json

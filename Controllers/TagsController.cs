@@ -4,6 +4,8 @@ using PIWebAPIApp.Models.DTOs;
 using PIWebAPIApp.Utilities;
 using System.Security.Claims;
 using PIWebAPIApp.Models; // Добавляем для PIConfiguration
+using System.ComponentModel.DataAnnotations;
+using System.Net.Mail;
 
 namespace PIWebAPIApp.Controllers
 {
@@ -137,14 +139,50 @@ namespace PIWebAPIApp.Controllers
             {
                 Logger.Info($"Обновление значения для тега: {request.TagName} на {request.NewState}");
 
-                if (string.IsNullOrWhiteSpace(request.TagName) ||
-                    string.IsNullOrWhiteSpace(request.NewState) ||
-                    string.IsNullOrWhiteSpace(request.Email) ||
-                    string.IsNullOrWhiteSpace(request.Justification))
+                // === НОВАЯ ВАЛИДАЦИЯ НА СЕРВЕРЕ ===
+                if (string.IsNullOrWhiteSpace(request.TagName))
                 {
-                    return BadRequest(new { success = false, message = "Tag name, new state, email, and justification are required" });
+                    Logger.Error("Имя тега не указано");
+                    return BadRequest(new { success = false, message = "Tag name is required" });
                 }
 
+                if (string.IsNullOrWhiteSpace(request.NewState))
+                {
+                    Logger.Error("Новое состояние не указано");
+                    return BadRequest(new { success = false, message = "New state is required" });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Email))
+                {
+                    Logger.Error("Email не указан");
+                    return BadRequest(new { success = false, message = "Email is required" });
+                }
+
+                // Проверка формата email
+                try
+                {
+                    var email = new MailAddress(request.Email); // Это встроенный .NET валидатор
+                }
+                catch (FormatException)
+                {
+                    Logger.Error($"Неверный формат email: {request.Email}");
+                    return BadRequest(new { success = false, message = "Please enter a valid email address" });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Justification))
+                {
+                    Logger.Error("Обоснование не указано");
+                    return BadRequest(new { success = false, message = "Justification is required" });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.User))
+                {
+                    Logger.Warn("Имя пользователя не указано, используем 'Unknown'");
+                    request.User = "Unknown";
+                }
+                // === КОНЕЦ ВАЛИДАЦИИ НА СЕРВЕРЕ ===
+
+                // Получаем текущее значение для истории/уведомления
                 var currentValue = await _tagService.GetTagValueAsync(_config.DataServerWebId, request.TagName);
                 var oldState = currentValue?.GetDisplayValue() ?? "Unknown";
 
@@ -156,7 +194,8 @@ namespace PIWebAPIApp.Controllers
                 if (success)
                 {
                     Logger.Info($"Успешно обновлено значение для тега: {request.TagName}");
-                    
+
+                    // Отправляем email уведомление
                     var emailSent = await _notificationService.SendEmailNotificationAsync(
                         request.Email,
                         request.TagName,
