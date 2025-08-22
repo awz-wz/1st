@@ -1,0 +1,77 @@
+{
+  "Version": 1,
+  "Hash": "69AGPxOSd5jX1KKOCdFAJZUzM84Zk75kYzdQfaR0dQo=",
+  "Source": "PIWebAPIApp.Presentation",
+  "BasePath": "_content/PIWebAPIApp.Presentation",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "PIWebAPIApp.Presentation\\wwwroot",
+      "Source": "PIWebAPIApp.Presentation",
+      "ContentRoot": "C:\\C# Projects\\PIWebAPIApp\\src\\PIWebAPIApp.Presentation\\wwwroot\\",
+      "BasePath": "_content/PIWebAPIApp.Presentation",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\C# Projects\\PIWebAPIApp\\src\\PIWebAPIApp.Presentation\\wwwroot\\css\\style.css",
+      "SourceId": "PIWebAPIApp.Presentation",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\C# Projects\\PIWebAPIApp\\src\\PIWebAPIApp.Presentation\\wwwroot\\",
+      "BasePath": "_content/PIWebAPIApp.Presentation",
+      "RelativePath": "css/style.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\style.css"
+    },
+    {
+      "Identity": "C:\\C# Projects\\PIWebAPIApp\\src\\PIWebAPIApp.Presentation\\wwwroot\\index.html",
+      "SourceId": "PIWebAPIApp.Presentation",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\C# Projects\\PIWebAPIApp\\src\\PIWebAPIApp.Presentation\\wwwroot\\",
+      "BasePath": "_content/PIWebAPIApp.Presentation",
+      "RelativePath": "index.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\index.html"
+    },
+    {
+      "Identity": "C:\\C# Projects\\PIWebAPIApp\\src\\PIWebAPIApp.Presentation\\wwwroot\\js\\app.js",
+      "SourceId": "PIWebAPIApp.Presentation",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\C# Projects\\PIWebAPIApp\\src\\PIWebAPIApp.Presentation\\wwwroot\\",
+      "BasePath": "_content/PIWebAPIApp.Presentation",
+      "RelativePath": "js/app.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\app.js"
+    }
+  ]
+}
