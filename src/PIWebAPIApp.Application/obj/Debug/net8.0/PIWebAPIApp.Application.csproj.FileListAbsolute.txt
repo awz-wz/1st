@@ -1,0 +1,16 @@
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\bin\Debug\net8.0\PIWebAPIApp.Application.deps.json
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\bin\Debug\net8.0\PIWebAPIApp.Application.dll
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\bin\Debug\net8.0\PIWebAPIApp.Application.pdb
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\bin\Debug\net8.0\PIWebAPIApp.Domain.dll
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\bin\Debug\net8.0\PIWebAPIApp.Domain.pdb
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPIApp.Application.csproj.AssemblyReference.cache
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPIApp.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPIApp.Application.AssemblyInfoInputs.cache
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPIApp.Application.AssemblyInfo.cs
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPIApp.Application.csproj.CoreCompileInputs.cache
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPIApp.Application.sourcelink.json
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPI.279CFF51.Up2Date
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPIApp.Application.dll
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\refint\PIWebAPIApp.Application.dll
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\PIWebAPIApp.Application.pdb
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Application\obj\Debug\net8.0\ref\PIWebAPIApp.Application.dll
