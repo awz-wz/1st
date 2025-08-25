@@ -1,11 +1,11 @@
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\bin\Debug\net8.0\PIWebAPIApp.Domain.deps.json
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\bin\Debug\net8.0\PIWebAPIApp.Domain.dll
+C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\bin\Debug\net8.0\PIWebAPIApp.Domain.pdb
 C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\obj\Debug\net8.0\PIWebAPIApp.Domain.GeneratedMSBuildEditorConfig.editorconfig
 C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\obj\Debug\net8.0\PIWebAPIApp.Domain.AssemblyInfoInputs.cache
 C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\obj\Debug\net8.0\PIWebAPIApp.Domain.AssemblyInfo.cs
 C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\obj\Debug\net8.0\PIWebAPIApp.Domain.csproj.CoreCompileInputs.cache
 C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\obj\Debug\net8.0\PIWebAPIApp.Domain.sourcelink.json
-C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\bin\Debug\net8.0\PIWebAPIApp.Domain.deps.json
-C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\bin\Debug\net8.0\PIWebAPIApp.Domain.dll
-C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\bin\Debug\net8.0\PIWebAPIApp.Domain.pdb
 C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\obj\Debug\net8.0\PIWebAPIApp.Domain.dll
 C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\obj\Debug\net8.0\refint\PIWebAPIApp.Domain.dll
 C:\C# Projects\PIWebAPIApp\src\PIWebAPIApp.Domain\obj\Debug\net8.0\PIWebAPIApp.Domain.pdb

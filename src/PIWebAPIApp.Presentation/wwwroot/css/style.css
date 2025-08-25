@@ -76,8 +76,8 @@ header p {
 }
 
 .form-control[type="email"] {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'%3E%3C/path%3E%3Cpath d='M22 6l-10 7L2 6'%3E%3C/path%3E%3C/svg%3E") left 12px no-repeat;
-    padding-left: 35px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'%3E%3C/path%3E%3Cpath d='M22 6l-10 7L2 6'%3E%3C/path%3E%3C/svg%3E") left 13px center no-repeat;
+    padding-left: 40px; /* Увеличьте padding, чтобы текст не налезал на иконку */
 }
 
 .form-control[type="textarea"] {
@@ -175,6 +175,7 @@ header p {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 6.13px;
 }
 
 .remove-tag-btn:hover {
@@ -271,7 +272,7 @@ header p {
 }
 
 .save-btn {
-    background: #007bff;
+    background: #667eea;
     color: white;
     border: none;
     padding: 12px 30px;

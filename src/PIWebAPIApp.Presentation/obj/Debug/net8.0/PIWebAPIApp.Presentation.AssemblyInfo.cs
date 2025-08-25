@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PIWebAPIApp.Presentation")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d55cae50d71354d2414f1dcddfc2e98c0c7e1a89")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dffb9d30253f51f3e44be078aa1ee0e3b455040b")]
 [assembly: System.Reflection.AssemblyProductAttribute("PIWebAPIApp.Presentation")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PIWebAPIApp.Presentation")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

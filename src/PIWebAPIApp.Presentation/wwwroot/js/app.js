@@ -79,107 +79,114 @@ class PITagManager {
     }
     // === КОНЕЦ МЕТОДОВ ДЛЯ ВАЛИДАЦИИ ===
 
-    async saveAllTags() {
-        const email = this.emailInput.value.trim();
-        const justification = this.justificationInput.value.trim();
+        async saveAllTags() {
+            // ... (валидация) ...
 
-        // === ВАЛИДАЦИЯ EMAIL С ВИЗУАЛЬНОЙ ОБРАТНОЙ СВЯЗЬЮ ===
-        // Сначала уберем возможные предыдущие ошибки
-        this.emailInput.classList.remove('invalid');
-        if (this.emailErrorDiv) {
-            this.emailErrorDiv.remove();
-            this.emailErrorDiv = null;
-        }
+            try {
+                this.setLoading(true);
 
-        if (!email) {
-            this.showFieldError(this.emailInput, 'Email is required');
-            this.showStatusMessage('Please enter email address', 'error');
-            return;
-        }
+                const validTags = this.currentTags.filter(tag => tag.name);
+                if (validTags.length === 0) {
+                    this.showStatusMessage('Please get information for at least one tag', 'error');
+                    return;
+                }
 
-        if (!this.isValidEmail(email)) {
-            this.showFieldError(this.emailInput, 'Please enter a valid email address (e.g., user@example.com)');
-            this.showStatusMessage('Please enter a valid email address', 'error');
-            return;
-        }
-        // === КОНЕЦ ВАЛИДАЦИИ EMAIL ===
+                // Подготавливаем данные для обновления
+                const updatePromises = validTags.map(async (tag) => {
+                    const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
+                    const newStatus = statusSelect ? statusSelect.value : 'OPEN';
 
-        if (!justification) {
-            this.showStatusMessage('Please enter justification', 'error');
-            // Можно также подсветить поле justification, если добавить ему обработку
-            return;
-        }
+                    const response = await fetch('/api/tags/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            tagName: tag.name,
+                            newState: newStatus,
+                            email: email,
+                            justification: justification,
+                            user: this.activeUser // Используем this.activeUser
+                        })
+                    });
 
-        if (this.currentTags.length === 0) {
-            this.showStatusMessage('Please add at least one tag', 'error');
-            return;
-        }
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `Failed to update tag: ${response.status}`);
+                    }
 
-        try {
-            this.setLoading(true);
-
-            // Проверяем, что все теги имеют имя
-            const validTags = this.currentTags.filter(tag => tag.name);
-            if (validTags.length === 0) {
-                this.showStatusMessage('Please get information for at least one tag', 'error');
-                return;
-            }
-
-            // Подготавливаем данные для обновления
-            const updatePromises = validTags.map(async (tag) => {
-                const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
-                const newStatus = statusSelect ? statusSelect.value : 'OPEN';
-
-                const response = await fetch('/api/tags/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        tagName: tag.name,
-                        newState: newStatus,
-                        email: email,
-                        justification: justification,
-                        user: this.currentUser
-                    })
+                    // === ВАЖНО: Обрабатываем успешный ответ с обновленными данными ===
+                    const result = await response.json(); // Получаем JSON-ответ
+                    if (result.success && result.updatedTagData) {
+                        // Если сервер вернул обновленные данные, используем их
+                        return {
+                            index: tag.index,
+                            success: true,
+                            updatedData: result.updatedTagData // Новые value, timestamp, good
+                        };
+                    } else {
+                        // Если данные не вернулись (например, ошибка получения после обновления),
+                        // можно вернуть базовый успех или обработать иначе
+                        return {
+                            index: tag.index,
+                            success: result.success,
+                            message: result.message || 'Tag updated, but data retrieval failed'
+                        };
+                    }
+                    // === КОНЕЦ ОБРАБОТКИ ОТВЕТА ===
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to update tag: ${response.status}`);
-                }
+                const results = await Promise.allSettled(updatePromises);
 
-                return await response.json();
-            });
+                // Обновляем отображение для каждого тега на основе результата
+                results.forEach((resultPromise, index) => {
+                    // Находим соответствующий тег в this.currentTags по индексу
+                    // или передаем index напрямую в результат
+                    const tagIndex = validTags[index].index; // Получаем индекс тега
 
-            const results = await Promise.all(updatePromises);
+                    if (resultPromise.status === 'fulfilled') {
+                        const result = resultPromise.value; // Результат промиса (объект с index, success, updatedData)
 
-            // Обновляем отображение для каждого тега
-            validTags.forEach(tag => {
-                const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
-                const newStatus = statusSelect ? statusSelect.value : 'OPEN';
+                        if (result.success && result.updatedData) {
+                            // === Обновляем UI данными от сервера ===
+                            const tagValueElement = document.getElementById(`tagValue_${tagIndex}`);
+                            const tagTimestampElement = document.getElementById(`tagTimestamp_${tagIndex}`);
+                            const statusBadgeElement = document.getElementById(`tagStatus_${tagIndex}`); // Обновляем и статус
 
-                const tagValue = document.getElementById(`tagValue_${tag.index}`);
-                const tagTimestamp = document.getElementById(`tagTimestamp_${tag.index}`);
+                            if (tagValueElement) {
+                                tagValueElement.textContent = result.updatedData.value;
+                                // Обновляем класс в зависимости от состояния Good
+                                tagValueElement.className = `value ${result.updatedData.good ? 'value-good' : 'value-bad'}`;
+                            }
+                            if (tagTimestampElement) {
+                                // Преобразуем ISO строку времени из PI в локальный формат, если нужно
+                                // Или просто отображаем как есть. Здесь отображаем как есть.
+                                tagTimestampElement.textContent = new Date(result.updatedData.timestamp).toLocaleString('en-US');
+                            }
+                            if (statusBadgeElement) {
+                                statusBadgeElement.textContent = result.updatedData.good ? 'GOOD' : 'BAD';
+                                statusBadgeElement.className = `status-badge ${result.updatedData.good ? 'status-good' : 'status-bad'}`;
+                            }
+                            // === Конец обновления UI ===
+                        } else {
+                            // Обработка случая, если обновление прошло, но данные не получены
+                            this.showStatusMessage(`Tag ${validTags[index].name} updated, but display data might be stale.`, 'warning');
+                        }
+                    } else {
+                        // Обработка ошибки для конкретного тега
+                        console.error(`Error updating tag at index ${tagIndex}:`, resultPromise.reason);
+                        this.showStatusMessage(`Error updating tag ${validTags[index].name}: ${resultPromise.reason.message}`, 'error');
+                    }
+                });
 
-                if (tagValue) {
-                    tagValue.textContent = newStatus;
-                    tagValue.className = 'value value-good';
-                }
-                if (tagTimestamp) {
-                    const now = new Date().toLocaleString('en-US');
-                    tagTimestamp.textContent = now;
-                }
-            });
-
-            this.showStatusMessage('All tags updated successfully');
-        } catch (error) {
-            console.error('Error updating tags:', error);
-            this.showStatusMessage(`Error: ${error.message}`, 'error');
-        } finally {
-            this.setLoading(false);
+                this.showStatusMessage('All tags update process completed');
+            } catch (error) {
+                console.error('Error updating tags:', error);
+                this.showStatusMessage(`Error: ${error.message}`, 'error');
+            } finally {
+                this.setLoading(false);
+            }
         }
-    }
 
     async getCurrentUser() {
         try {

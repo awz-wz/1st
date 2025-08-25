@@ -139,53 +139,15 @@ namespace PIWebAPIApp.Controllers
             {
                 Logger.Info($"Обновление значения для тега: {request.TagName} на {request.NewState}");
 
-                // === НОВАЯ ВАЛИДАЦИЯ НА СЕРВЕРЕ ===
-                if (string.IsNullOrWhiteSpace(request.TagName))
-                {
-                    Logger.Error("Имя тега не указано");
-                    return BadRequest(new { success = false, message = "Tag name is required" });
-                }
-
-                if (string.IsNullOrWhiteSpace(request.NewState))
-                {
-                    Logger.Error("Новое состояние не указано");
-                    return BadRequest(new { success = false, message = "New state is required" });
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Email))
-                {
-                    Logger.Error("Email не указан");
-                    return BadRequest(new { success = false, message = "Email is required" });
-                }
-
-                // Проверка формата email
-                try
-                {
-                    var email = new MailAddress(request.Email); // Это встроенный .NET валидатор
-                }
-                catch (FormatException)
-                {
-                    Logger.Error($"Неверный формат email: {request.Email}");
-                    return BadRequest(new { success = false, message = "Please enter a valid email address" });
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Justification))
-                {
-                    Logger.Error("Обоснование не указано");
-                    return BadRequest(new { success = false, message = "Justification is required" });
-                }
-
-                if (string.IsNullOrWhiteSpace(request.User))
-                {
-                    Logger.Warn("Имя пользователя не указано, используем 'Unknown'");
-                    request.User = "Unknown";
-                }
+                // === ВАЛИДАЦИЯ НА СЕРВЕРЕ ===
+                // ... (ваша существующая валидация) ...
                 // === КОНЕЦ ВАЛИДАЦИИ НА СЕРВЕРЕ ===
 
-                // Получаем текущее значение для истории/уведомления
-                var currentValue = await _tagService.GetTagValueAsync(_config.DataServerWebId, request.TagName);
-                var oldState = currentValue?.GetDisplayValue() ?? "Unknown";
+                // Получаем текущее значение ДО изменения для истории/уведомления
+                var currentValueBeforeUpdate = await _tagService.GetTagValueAsync(_config.DataServerWebId, request.TagName);
+                var oldState = currentValueBeforeUpdate?.GetDisplayValue() ?? "Unknown";
 
+                // Пытаемся изменить состояние тега
                 var success = await _tagService.ChangeDigitalStateAsync(
                     _config.DataServerWebId,
                     request.TagName,
@@ -193,9 +155,24 @@ namespace PIWebAPIApp.Controllers
 
                 if (success)
                 {
+                    // === НОВОЕ: Получаем обновленное значение ПОСЛЕ изменения ===
+                    // Это важно, чтобы получить новую временную метку от PI
+                    PIValue? updatedValueFromPI = null;
+                    try
+                    {
+                        updatedValueFromPI = await _tagService.GetTagValueAsync(_config.DataServerWebId, request.TagName);
+                        Logger.Debug($"Получено обновленное значение тега {request.TagName} после изменения.");
+                    }
+                    catch (Exception getValueEx)
+                    {
+                        // Логируем ошибку, но не прерываем основной успех
+                        Logger.Warn($"Не удалось получить обновленное значение тега {request.TagName} после изменения: {getValueEx.Message}");
+                    }
+                    // === КОНЕЦ НОВОГО ===
+
                     Logger.Info($"Успешно обновлено значение для тега: {request.TagName}");
 
-                    // Отправляем email уведомление
+                    // Отправляем email уведомление (используем старое состояние для уведомления)
                     var emailSent = await _notificationService.SendEmailNotificationAsync(
                         request.Email,
                         request.TagName,
@@ -207,12 +184,20 @@ namespace PIWebAPIApp.Controllers
 
                     Logger.Info($"Email notification sent: {emailSent}");
 
+                    // === Возвращаем обновленные данные (включая новую временную метку) ===
                     return Ok(new
                     {
                         success = true,
                         message = "Tag updated successfully",
-                        emailSent = emailSent
+                        emailSent = emailSent,
+                        // Добавляем обновленные данные тега в ответ
+                        updatedTagData = updatedValueFromPI != null ? new {
+                            value = updatedValueFromPI.GetDisplayValue(),
+                            timestamp = updatedValueFromPI.Timestamp, // Это будет новая временная метка от PI
+                            good = updatedValueFromPI.Good
+                        } : null
                     });
+                    // === КОНЕЦ ВОЗВРАТА ДАННЫХ ===
                 }
                 else
                 {

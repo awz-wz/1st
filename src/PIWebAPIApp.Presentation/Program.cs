@@ -20,20 +20,20 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 // Добавляем сервисы
-// Конфигурация PI - оставляем как было, это работает
+// === РЕГИСТРАЦИЯ КОНФИГУРАЦИЙ ИЗ appsettings.json ===
+
+// PI Configuration
 builder.Services.AddSingleton<PIConfiguration>(sp =>
 {
-    return new PIConfiguration
-    {
-        BaseUrl = "https://piwebd2.tengizchevroil.com/piwebapi",
-        DataServerWebId = "F1DSWCdJQqyHMkueMiGiQ3KQpwvKUjAAVENPR0lMU1RQSURcS1RMLUZXUy1LLTI2MC5NVg",
-        UseDefaultCredentials = true,
-        TimeoutSeconds = 30
-    };
+    // Читаем конфигурацию из appsettings.json
+    var configSection = builder.Configuration.GetSection("PIConfiguration");
+    var config = new PIConfiguration();
+    configSection.Bind(config); // Заполняем объект данными из секции
+    Logger.Info($"PIConfiguration loaded from appsettings.json - BaseUrl: {config.BaseUrl}, WebId: {config.DataServerWebId}");
+    return config;
 });
 
-// === ИСПРАВЛЕННАЯ РЕГИСТРАЦИЯ EmailConfiguration ===
-// 1. Регистрируем EmailConfiguration как Singleton, заполняя его данными из appsettings.json
+// Email Configuration
 builder.Services.AddSingleton<EmailConfiguration>(sp =>
 {
     var emailConfig = new EmailConfiguration();
@@ -45,7 +45,7 @@ builder.Services.AddSingleton<EmailConfiguration>(sp =>
     
     return emailConfig;
 });
-// === КОНЕЦ ИСПРАВЛЕННОЙ РЕГИСТРАЦИИ EmailConfiguration ===
+// === КОНЕЦ РЕГИСТРАЦИИ КОНФИГУРАЦИЙ ===
 
 builder.Services.AddSingleton<PIWebApiClient>(sp =>
 {

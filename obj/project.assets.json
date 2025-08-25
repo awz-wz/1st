@@ -3942,11 +3942,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\C# Projects\\1st application\\1st application.csproj",
-      "projectName": "1st application",
-      "projectPath": "C:\\C# Projects\\1st application\\1st application.csproj",
+      "projectUniqueName": "C:\\C# Projects\\PIWebAPIApp\\PIWebAPIApp.csproj",
+      "projectName": "PIWebAPIApp",
+      "projectPath": "C:\\C# Projects\\PIWebAPIApp\\PIWebAPIApp.csproj",
       "packagesPath": "C:\\Users\\uqng\\.nuget\\packages\\",
-      "outputPath": "C:\\C# Projects\\1st application\\obj\\",
+      "outputPath": "C:\\C# Projects\\PIWebAPIApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\uqng\\AppData\\Roaming\\NuGet\\NuGet.Config"

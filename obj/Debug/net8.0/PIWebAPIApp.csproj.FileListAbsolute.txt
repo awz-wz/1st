@@ -1,0 +1,7 @@
+C:\C# Projects\PIWebAPIApp\obj\Debug\net8.0\PIWebAPIApp.csproj.AssemblyReference.cache
+C:\C# Projects\PIWebAPIApp\obj\Debug\net8.0\PIWebAPIApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\C# Projects\PIWebAPIApp\obj\Debug\net8.0\PIWebAPIApp.AssemblyInfoInputs.cache
+C:\C# Projects\PIWebAPIApp\obj\Debug\net8.0\PIWebAPIApp.AssemblyInfo.cs
+C:\C# Projects\PIWebAPIApp\obj\Debug\net8.0\PIWebAPIApp.csproj.CoreCompileInputs.cache
+C:\C# Projects\PIWebAPIApp\obj\Debug\net8.0\PIWebAPIApp.MvcApplicationPartsAssemblyInfo.cache
+C:\C# Projects\PIWebAPIApp\obj\Debug\net8.0\PIWebAPIApp.sourcelink.json
