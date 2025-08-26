@@ -79,114 +79,202 @@ class PITagManager {
     }
     // === КОНЕЦ МЕТОДОВ ДЛЯ ВАЛИДАЦИИ ===
 
-        async saveAllTags() {
-            // ... (валидация) ...
+    async saveAllTags() {
+        // === НАЧАЛО ВАЛИДАЦИИ ===
+        const email = this.emailInput.value.trim();
+        const justification = this.justificationInput.value.trim();
 
-            try {
-                this.setLoading(true);
+        // --- Валидация Email ---
+        // Сначала уберем возможные предыдущие ошибки для email
+        this.emailInput.classList.remove('invalid');
+        if (this.emailErrorDiv) {
+            this.emailErrorDiv.remove();
+            this.emailErrorDiv = null;
+        }
 
-                const validTags = this.currentTags.filter(tag => tag.name);
-                if (validTags.length === 0) {
-                    this.showStatusMessage('Please get information for at least one tag', 'error');
-                    return;
+        // Проверка обязательного поля Email
+        if (!email) {
+            this.showFieldError(this.emailInput, 'Email is required');
+            this.showStatusMessage('Please enter email address', 'error');
+            return; // Прерываем выполнение, если email не заполнен
+        }
+
+        // Проверка формата Email
+        if (!this.isValidEmail(email)) {
+            this.showFieldError(this.emailInput, 'Please enter a valid email address (e.g., user@example.com)');
+            this.showStatusMessage('Please enter a valid email address', 'error');
+            return; // Прерываем выполнение, если email не валиден
+        }
+        // --- Конец валидации Email ---
+
+        // Проверка обязательного поля Justification
+        if (!justification) {
+            this.showStatusMessage('Please enter justification', 'error');
+            // Можно также подсветить поле justification, если добавить ему обработку
+            return; // Прерываем выполнение, если justification не заполнено
+        }
+
+        // Проверка наличия тегов с информацией
+        const validTags = this.currentTags.filter(tag => tag.name); // Фильтруем сразу здесь
+        if (validTags.length === 0) {
+            this.showStatusMessage('Please get information for at least one tag', 'error');
+            return; // Прерываем выполнение, если нет тегов с информацией
+        }
+        // === КОНЕЦ ВАЛИДАЦИИ ===
+
+        try {
+            this.setLoading(true);
+
+            // Подготавливаем данные для обновления
+            const updatePromises = validTags.map(async (tag) => {
+                const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
+                const newStatus = statusSelect ? statusSelect.value : 'OPEN';
+
+                const response = await fetch('/api/tags/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tagName: tag.name,
+                        newState: newStatus,
+                        email: email, // Используем проверенное значение
+                        justification: justification, // Используем проверенное значение
+                        user: this.currentUser // Используем this.currentUser, как в exportToPdf
+                    })
+                });
+
+                // === ОБРАБОТКА ОТВЕТА ОТ СЕРВЕРА ===
+                if (!response.ok) {
+                    // Сервер вернул ошибку (4xx, 5xx)
+                    let errorMessage = `Failed to update tag: ${response.status} ${response.statusText}`;
+                    try {
+                        // Пытаемся получить детали ошибки из тела ответа
+                        const errorData = await response.json();
+                        // Предполагаем, что сервер возвращает { "success": false, "message": "..." }
+                        // или { "error": "..." }
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                    } catch (parseError) {
+                        // Если не удалось распарсить JSON, используем дефолтное сообщение
+                        console.warn(`Could not parse error response for tag ${tag.name}:`, parseError);
+                    }
+                    // Выбрасываем ошибку, чтобы она была поймана в Promise.allSettled
+                    throw new Error(errorMessage);
                 }
 
-                // Подготавливаем данные для обновления
-                const updatePromises = validTags.map(async (tag) => {
-                    const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
-                    const newStatus = statusSelect ? statusSelect.value : 'OPEN';
+                // Если ответ успешный (2xx), парсим JSON
+                const result = await response.json(); // Получаем JSON-ответ
 
-                    const response = await fetch('/api/tags/update', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            tagName: tag.name,
-                            newState: newStatus,
-                            email: email,
-                            justification: justification,
-                            user: this.activeUser // Используем this.activeUser
-                        })
-                    });
+                // Проверяем логику успеха от сервера (на случай, если сервер вернул 200 OK, но success=false)
+                if (result.success && result.updatedTagData) {
+                    // Если сервер вернул обновленные данные, используем их
+                    return {
+                        index: tag.index,
+                        success: true,
+                        updatedData: result.updatedTagData // Новые value, timestamp, good
+                    };
+                } else if (result.success) {
+                    // Сервер сказал успех, но данных нет (старый формат ответа или ошибка получения данных)
+                    return {
+                        index: tag.index,
+                        success: true,
+                        message: result.message || 'Tag updated, but detailed data not available.'
+                    };
+                } else {
+                    // Сервер вернул success=false
+                    throw new Error(result.message || 'Server reported update failure.');
+                }
+                // === КОНЕЦ ОБРАБОТКИ ОТВЕТА ===
+            });
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || `Failed to update tag: ${response.status}`);
-                    }
+            const results = await Promise.allSettled(updatePromises);
 
-                    // === ВАЖНО: Обрабатываем успешный ответ с обновленными данными ===
-                    const result = await response.json(); // Получаем JSON-ответ
-                    if (result.success && result.updatedTagData) {
-                        // Если сервер вернул обновленные данные, используем их
-                        return {
-                            index: tag.index,
-                            success: true,
-                            updatedData: result.updatedTagData // Новые value, timestamp, good
-                        };
-                    } else {
-                        // Если данные не вернулись (например, ошибка получения после обновления),
-                        // можно вернуть базовый успех или обработать иначе
-                        return {
-                            index: tag.index,
-                            success: result.success,
-                            message: result.message || 'Tag updated, but data retrieval failed'
-                        };
-                    }
-                    // === КОНЕЦ ОБРАБОТКИ ОТВЕТА ===
-                });
+            // Обновляем отображение для каждого тега на основе результата
+            let overallSuccess = true; // Флаг для общего статуса
+            for (let i = 0; i < results.length; i++) {
+                const resultPromise = results[i];
+                const tag = validTags[i]; // Получаем тег по индексу из отфильтрованного массива
 
-                const results = await Promise.allSettled(updatePromises);
+                if (resultPromise.status === 'fulfilled') {
+                    const result = resultPromise.value; // Результат промиса
 
-                // Обновляем отображение для каждого тега на основе результата
-                results.forEach((resultPromise, index) => {
-                    // Находим соответствующий тег в this.currentTags по индексу
-                    // или передаем index напрямую в результат
-                    const tagIndex = validTags[index].index; // Получаем индекс тега
+                    if (result.success && result.updatedData) {
+                        // === Обновляем UI данными от сервера ===
+                        const tagValueElement = document.getElementById(`tagValue_${tag.index}`);
+                        const tagTimestampElement = document.getElementById(`tagTimestamp_${tag.index}`);
+                        const statusBadgeElement = document.getElementById(`tagStatus_${tag.index}`); // Обновляем и статус
 
-                    if (resultPromise.status === 'fulfilled') {
-                        const result = resultPromise.value; // Результат промиса (объект с index, success, updatedData)
-
-                        if (result.success && result.updatedData) {
-                            // === Обновляем UI данными от сервера ===
-                            const tagValueElement = document.getElementById(`tagValue_${tagIndex}`);
-                            const tagTimestampElement = document.getElementById(`tagTimestamp_${tagIndex}`);
-                            const statusBadgeElement = document.getElementById(`tagStatus_${tagIndex}`); // Обновляем и статус
-
-                            if (tagValueElement) {
-                                tagValueElement.textContent = result.updatedData.value;
-                                // Обновляем класс в зависимости от состояния Good
-                                tagValueElement.className = `value ${result.updatedData.good ? 'value-good' : 'value-bad'}`;
+                        if (tagValueElement) {
+                            tagValueElement.textContent = result.updatedData.value;
+                            // Обновляем класс в зависимости от состояния Good
+                            tagValueElement.className = `value ${result.updatedData.good ? 'value-good' : 'value-bad'}`;
+                        }
+                        if (tagTimestampElement) {
+                            // Преобразуем ISO строку времени из PI в локальный формат
+                            try {
+                                const dateObj = new Date(result.updatedData.timestamp);
+                                if (isNaN(dateObj)) {
+                                    // Если дата некорректна, отображаем как есть
+                                    tagTimestampElement.textContent = result.updatedData.timestamp;
+                                } else {
+                                    tagTimestampElement.textContent = dateObj.toLocaleString('en-US');
+                                }
+                            } catch (dateError) {
+                                console.error(`Error formatting timestamp for tag ${tag.name}:`, dateError);
+                                tagTimestampElement.textContent = result.updatedData.timestamp; // fallback
                             }
-                            if (tagTimestampElement) {
-                                // Преобразуем ISO строку времени из PI в локальный формат, если нужно
-                                // Или просто отображаем как есть. Здесь отображаем как есть.
-                                tagTimestampElement.textContent = new Date(result.updatedData.timestamp).toLocaleString('en-US');
-                            }
-                            if (statusBadgeElement) {
-                                statusBadgeElement.textContent = result.updatedData.good ? 'GOOD' : 'BAD';
-                                statusBadgeElement.className = `status-badge ${result.updatedData.good ? 'status-good' : 'status-bad'}`;
-                            }
-                            // === Конец обновления UI ===
-                        } else {
-                            // Обработка случая, если обновление прошло, но данные не получены
-                            this.showStatusMessage(`Tag ${validTags[index].name} updated, but display data might be stale.`, 'warning');
+                        }
+                        if (statusBadgeElement) {
+                            statusBadgeElement.textContent = result.updatedData.good ? 'GOOD' : 'BAD';
+                            statusBadgeElement.className = `status-badge ${result.updatedData.good ? 'status-good' : 'status-bad'}`;
+                        }
+                        // === Конец обновления UI ===
+                    } else if (result.success) {
+                        // Обновление прошло, но данные не получены или в старом формате
+                        // Можно обновить только статус UI или оставить как есть
+                        console.warn(`Tag ${tag.name} updated, but detailed data not available or in old format.`, result.message);
+                        // Простой вариант: обновить только значение в UI на newStatus
+                        const statusSelect = document.getElementById(`statusSelect_${tag.index}`);
+                        const newStatus = statusSelect ? statusSelect.value : 'OPEN';
+                        const tagValue = document.getElementById(`tagValue_${tag.index}`);
+                        const tagTimestamp = document.getElementById(`tagTimestamp_${tag.index}`);
+                        if (tagValue) {
+                            tagValue.textContent = newStatus;
+                            tagValue.className = 'value value-good'; // Предполагаем успех
+                        }
+                        if (tagTimestamp) {
+                            const now = new Date().toLocaleString('en-US');
+                            tagTimestamp.textContent = now;
                         }
                     } else {
-                        // Обработка ошибки для конкретного тега
-                        console.error(`Error updating tag at index ${tagIndex}:`, resultPromise.reason);
-                        this.showStatusMessage(`Error updating tag ${validTags[index].name}: ${resultPromise.reason.message}`, 'error');
+                        // Этот случай маловероятен, так как ошибка должна была быть выброшена выше
+                        console.error(`Unexpected result structure for tag ${tag.name}:`, result);
+                        this.showStatusMessage(`Unexpected response for tag ${tag.name}.`, 'error');
+                        overallSuccess = false;
                     }
-                });
-
-                this.showStatusMessage('All tags update process completed');
-            } catch (error) {
-                console.error('Error updating tags:', error);
-                this.showStatusMessage(`Error: ${error.message}`, 'error');
-            } finally {
-                this.setLoading(false);
+                } else {
+                    // Обработка ошибки для конкретного тега (rejected promise)
+                    console.error(`Error updating tag ${tag.name}:`, resultPromise.reason);
+                    this.showStatusMessage(`Error updating tag ${tag.name}: ${resultPromise.reason.message}`, 'error');
+                    overallSuccess = false;
+                }
             }
+
+            if (overallSuccess) {
+                this.showStatusMessage('All tags updated successfully');
+            } else {
+                this.showStatusMessage('Some tags failed to update. Check logs.', 'warning');
+            }
+
+        } catch (error) {
+            // Этот catch ловит ошибки, которые могли уйти мимо Promise.allSettled
+            // или ошибки в самой логике выше (хотя маловероятно)
+            console.error('Unexpected error in saveAllTags:', error);
+            this.showStatusMessage(`Unexpected Error: ${error.message}`, 'error');
+        } finally {
+            this.setLoading(false);
         }
+    }
 
     async getCurrentUser() {
         try {

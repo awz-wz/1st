@@ -16,7 +16,7 @@ namespace PIWebAPIApp.Services
         private readonly EmailConfiguration _emailConfig; // Email конфигурация
         private readonly ITagService _tagService;
 
-        // Обновляем конструктор: принимаем обе конфигурации
+        
         public NotificationService(PIConfiguration piConfig, EmailConfiguration emailConfig, ITagService tagService)
         {
             _piConfig = piConfig ?? throw new ArgumentNullException(nameof(piConfig));

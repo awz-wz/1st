@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PIWebAPIApp.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dffb9d30253f51f3e44be078aa1ee0e3b455040b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40becfc610c7ee81f7fa766f4339f53d7f259351")]
 [assembly: System.Reflection.AssemblyProductAttribute("PIWebAPIApp.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PIWebAPIApp.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
