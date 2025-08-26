@@ -57,7 +57,7 @@ ASP.NET Core приложение с REST‑контроллером и стат
    dotnet restore
    dotnet run --project src/PIWebAPIApp.Presentation
    ```
-3. По умолчанию фронтенд доступен по адресу `http://localhost:5000`.
+3. По умолчанию фронтенд доступен по адресу `http://localhost:5276`.
 
 ## API
 | Метод и путь | Назначение |
