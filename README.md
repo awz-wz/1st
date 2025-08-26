@@ -8,27 +8,27 @@ PIWebAPIApp предоставляет REST API и минимальный веб
 
 ### 1. Domain
 Содержит базовые сущности:
-- `PIPoint` — описание PI‑тега (WebId, имя, путь и т.д.)【F:src/PIWebAPIApp.Domain/Entities/PIPoint.cs†L1-L12】
-- `PIValue` — значение тега c временной меткой и признаком качества; умеет преобразовывать и красиво отображать данные【F:src/PIWebAPIApp.Domain/Entities/PIValue.cs†L6-L52】
+- `PIPoint` — описание PI‑тега (WebId, имя, путь и т.д.)【F:src/PIWebAPIApp.Domain/Entities/PIPoint.cs】
+- `PIValue` — значение тега c временной меткой и признаком качества; умеет преобразовывать и красиво отображать данные【F:src/PIWebAPIApp.Domain/Entities/PIValue.cs】
 
 ### 2. Application
 Определяет модели и контракты:
 - DTO `TagInfo` и `ExportPdfRequest`
-- Интерфейс `ITagService` для чтения, записи и поиска тегов【F:src/PIWebAPIApp.Application/Interfaces/ITagService.cs†L6-L13】
+- Интерфейс `ITagService` для чтения, записи и поиска тегов【F:src/PIWebAPIApp.Application/Interfaces/ITagService.cs】
 - Интерфейс `INotificationService` (реализация см. ниже)
 
 ### 3. Infrastructure
 Реализации сервисов и вспомогательные классы:
-- `PIWebApiClient` — низкоуровневый клиент PI Web API (поиск точек, чтение и запись значений)【F:src/PIWebAPIApp.Infrastructure/Clients/ PIWebApiClient.cs†L34-L155】
-- `PITagService` — высокоуровневые операции с тегами: изменение цифрового состояния, получение значения, поиск по фильтру и кэшированный список всех доступных тегов【F:src/PIWebAPIApp.Infrastructure/Services/PITagService.cs†L8-L130】
-- `NotificationService` — отправка e‑mail уведомлений и генерация PDF‑отчётов о действиях пользователя【F:src/PIWebAPIApp.Infrastructure/Services/NotificationService.cs†L27-L186】
+- `PIWebApiClient` — низкоуровневый клиент PI Web API (поиск точек, чтение и запись значений)【F:src/PIWebAPIApp.Infrastructure/Clients/ PIWebApiClient.cs】
+- `PITagService` — высокоуровневые операции с тегами: изменение цифрового состояния, получение значения, поиск по фильтру и кэшированный список всех доступных тегов【F:src/PIWebAPIApp.Infrastructure/Services/PITagService.cs】
+- `NotificationService` — отправка e‑mail уведомлений и генерация PDF‑отчётов о действиях пользователя【F:src/PIWebAPIApp.Infrastructure/Services/NotificationService.cs】
 - Утилиты `Logger` и `Email`
 
 ### 4. Presentation
 ASP.NET Core приложение с REST‑контроллером и статическими ресурсами:
-- `Program.cs` настраивает CORS, регистрирует конфигурации и сервисы, обслуживает статические файлы【F:src/PIWebAPIApp.Presentation/Program.cs†L8-L58】【F:src/PIWebAPIApp.Presentation/Program.cs†L62-L76】
-- `TagsController` предоставляет конечные точки API【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs†L27-L199】
-- В `wwwroot` размещён упрощённый фронтенд (`index.html`, `app.js`, `style.css`)【F:src/PIWebAPIApp.Presentation/wwwroot/index.html†L1-L52】
+- `Program.cs` настраивает CORS, регистрирует конфигурации и сервисы, обслуживает статические файлы【F:src/PIWebAPIApp.Presentation/Program.cs】【F:src/PIWebAPIApp.Presentation/Program.cs】
+- `TagsController` предоставляет конечные точки API【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs】
+- В `wwwroot` размещён упрощённый фронтенд (`index.html`, `app.js`, `style.css`)【F:src/PIWebAPIApp.Presentation/wwwroot/index.html】
 
 ## Конфигурация
 Настройки задаются в `appsettings.json`:
@@ -62,11 +62,11 @@ ASP.NET Core приложение с REST‑контроллером и стат
 ## API
 | Метод и путь | Назначение |
 |--------------|------------|
-| `GET /api/tags/current-user` | Возвращает имя текущего пользователя Windows【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs†L27-L48】 |
-| `GET /api/tags/search/{filter}` | Ищет теги по подстроке (мин. 2 символа)【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs†L50-L67】 |
-| `GET /api/tags/{tagName}` | Получает текущее значение тега【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs†L95-L126】 |
-| `POST /api/tags/update` | Изменяет цифровое состояние тега и отправляет e‑mail уведомление【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs†L135-L199】 |
-| `POST /api/tags/export-pdf` | Формирует PDF‑отчёт по набору тегов【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs†L69-L86】 |
+| `GET /api/tags/current-user` | Возвращает имя текущего пользователя Windows【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs】 |
+| `GET /api/tags/search/{filter}` | Ищет теги по подстроке (мин. 2 символа)【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs】 |
+| `GET /api/tags/{tagName}` | Получает текущее значение тега【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs】 |
+| `POST /api/tags/update` | Изменяет цифровое состояние тега и отправляет e‑mail уведомление【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs】 |
+| `POST /api/tags/export-pdf` | Формирует PDF‑отчёт по набору тегов【F:src/PIWebAPIApp.Presentation/Controllers/TagsController.cs】 |
 
 ## Веб‑интерфейс
 Статическая страница `index.html` позволяет:
@@ -75,8 +75,8 @@ ASP.NET Core приложение с REST‑контроллером и стат
 - сохранить изменения и экспортировать отчёт в PDF【F:src/PIWebAPIApp.Presentation/wwwroot/index.html†L16-L47】.
 
 ## Логирование и уведомления
-- Все операции пишутся в консоль через статический `Logger`【F:src/PIWebAPIApp.Infrastructure/Utilities/Logger.cs†L1-L32】.
-- При успешном обновлении тегов `NotificationService` отправляет письмо и добавляет запись в PDF‑отчёт с указанием пользователя, старого и нового состояния и временной метки【F:src/PIWebAPIApp.Infrastructure/Services/NotificationService.cs†L27-L186】.
+- Все операции пишутся в консоль через статический `Logger`【F:src/PIWebAPIApp.Infrastructure/Utilities/Logger.cs】.
+- При успешном обновлении тегов `NotificationService` отправляет письмо и добавляет запись в PDF‑отчёт с указанием пользователя, старого и нового состояния и временной метки【F:src/PIWebAPIApp.Infrastructure/Services/NotificationService.cs】.
 
 ## Известные проблемы и идеи развития
 - В репозитории присутствуют артефакты сборки (`bin/`, `obj/`) и файл с реальными паролями — их следует удалить и добавить `.gitignore`.
